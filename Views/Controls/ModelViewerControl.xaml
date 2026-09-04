@@ -1,0 +1,37 @@
+﻿<UserControl x:Class="RealmStudioX._3D.Views.Controls.ModelViewerControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:hx="http://helix-toolkit.org/wpf/SharpDX"
+             Background="Black">
+
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+        <hx:Viewport3DX
+            x:Name="Viewport"
+            Width="{Binding ActualWidth,
+               RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+            Height="{Binding ActualHeight,
+                RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+            BackgroundColor="GhostWhite"
+            ShowCoordinateSystem="True"
+            ShowViewCube="True"
+            IsRotationEnabled="True"
+            IsPanEnabled="True"
+            IsZoomEnabled="True"
+            EnableDpiScale="True">
+
+            <!-- Camera -->
+
+            <!-- Lighting -->
+            <hx:AmbientLight3D
+                Color="White" />
+
+            <hx:DirectionalLight3D
+                Direction="1,1,1"
+                Color="White" />
+
+        </hx:Viewport3DX>
+
+    </Grid>
+
+</UserControl>
