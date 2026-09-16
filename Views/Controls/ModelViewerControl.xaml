@@ -1,37 +1,75 @@
 ﻿<UserControl x:Class="RealmStudioX._3D.Views.Controls.ModelViewerControl"
+             x:Name="MVControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:hx="http://helix-toolkit.org/wpf/SharpDX"
-             Background="Black">
+             xmlns:htk="http://helix-toolkit.org/wpf"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             Background="WhiteSmoke"
+             mc:Ignorable="d"
+             d:DesignHeight="800"
+             d:DesignWidth="950">
 
-    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+    <Grid x:Name="SceneRoot">
 
-        <hx:Viewport3DX
-            x:Name="Viewport"
-            Width="{Binding ActualWidth,
-               RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-            Height="{Binding ActualHeight,
-                RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-            BackgroundColor="GhostWhite"
-            ShowCoordinateSystem="True"
-            ShowViewCube="True"
-            IsRotationEnabled="True"
-            IsPanEnabled="True"
-            IsZoomEnabled="True"
-            EnableDpiScale="True">
+        <!--
+            Each Grid provides a separate visual layer to which
+            an PostProcess Effect can be attached.
 
-            <!-- Camera -->
+            Keep these layers even when no effect is currently
+            assigned.
+        -->
 
-            <!-- Lighting -->
-            <hx:AmbientLight3D
-                Color="White" />
+        <!-- PostProcess layer 1 -->
+        <Grid x:Name="PostProcessLayer1">
 
-            <hx:DirectionalLight3D
-                Direction="1,1,1"
-                Color="White" />
+            <!-- PostProcess layer 2 -->
+            <Grid x:Name="PostProcessLayer2">
 
-        </hx:Viewport3DX>
+                <!-- PostProcess layer 3 -->
+                <Grid x:Name="PostProcessLayer3">
 
+                    <!-- PostProcess layer 4 -->
+                    <Grid x:Name="PostProcessLayer4">
+
+                        <!-- PostProcess layer 5 -->
+                        <Grid x:Name="PostProcessLayer5">
+
+                            <!-- 3D viewport -->
+                            <htk:HelixViewport3D
+                                x:Name="HelixTKViewport"
+                                ZoomExtentsWhenLoaded="False"
+                                IsMoveEnabled="True"
+                                IsPanEnabled="True"
+                                IsRotationEnabled="True"
+                                IsTouchZoomEnabled="False"
+                                IsZoomEnabled="True"
+                                ShowViewCube="True"
+                                ShowCoordinateSystem="True"
+                                IsInertiaEnabled="False">
+
+                                <htk:DefaultLights />
+
+                                <ModelVisual3D>
+                                    <ModelVisual3D.Content>
+                                        <Model3DGroup x:Name="ModelGroup">
+
+                                            <DirectionalLight
+                                                x:Name="ModelDirectionalLight"
+                                                Color="White"
+                                                Direction="1,1,1" />
+
+                                        </Model3DGroup>
+                                    </ModelVisual3D.Content>
+                                </ModelVisual3D>
+
+                            </htk:HelixViewport3D>
+
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Grid>
     </Grid>
 
 </UserControl>
