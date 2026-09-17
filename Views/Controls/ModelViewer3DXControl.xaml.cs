@@ -10,13 +10,12 @@ using HelixToolkit.Wpf;
 using HelixToolkit.Wpf.SharpDX;
 using RealmStudioShapeRenderingLib;
 using RealmStudioShapeRenderingLib.Logging;
-using RealmStudioX._3D.Models;
 using SharpDX.Direct3D11;
 using System.Diagnostics;
 using System.Numerics;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
-using System.Windows.Threading;
 using Color = System.Windows.Media.Color;
 using MeshGeometry3D = HelixToolkit.SharpDX.MeshGeometry3D;
 using OrthographicCamera = HelixToolkit.Wpf.SharpDX.OrthographicCamera;
@@ -1070,6 +1069,11 @@ namespace RealmStudioX._3D.Views.Controls
                 Color = Colors.Red,
                 Thickness = 1.0
             };
+        }
+
+        public BitmapSource? CreateSnapshot(int width, int height)
+        {
+            return Viewport.RenderBitmap(width, height);
         }
 
         private void CreateTestCube()

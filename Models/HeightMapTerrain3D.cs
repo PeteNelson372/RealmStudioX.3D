@@ -29,11 +29,9 @@ namespace RealmStudioX._3D.Models
         private float _maximumElevation;
         private float _elevationScale;
 
-        private TextureModel? _heightTexture;
         private PhongMaterial? _material;
 
         private byte[]? _texturePixels;
-        private int _textureStride;
 
         private int _textureModifiedLeft;
         private int _textureModifiedTop;
@@ -46,16 +44,21 @@ namespace RealmStudioX._3D.Models
 
         public Rect3D Bounds { get; private set; }
 
+        private Func<float, float, bool>? _isInsideLandform;
+
         public void Create(
             MapHeightMap heightMap,
             float minimumElevation,
             float maximumElevation,
-            float elevationScale)
+            float elevationScale,
+            Func<float, float, bool>? isInsideLandform = null)
         {
             ArgumentNullException.ThrowIfNull(heightMap);
 
             _heightMap = heightMap;
             _elevationMap = heightMap.HeightMap;
+
+            _isInsideLandform = isInsideLandform;
 
             ArgumentNullException.ThrowIfNull(_elevationMap);
 
@@ -500,9 +503,18 @@ namespace RealmStudioX._3D.Models
                 _heightMap == null)
                 return;
 
-            float elevation = _elevationMap[x, y];
+            SKColor color = SKColor.Empty;
 
-            SKColor color = GetHeightMapColor(elevation);
+            if (_isInsideLandform != null &&
+                !_isInsideLandform(x, y))
+            {
+                color = SKColors.Black;
+            }
+            else
+            {
+                float elevation = _elevationMap[x, y];
+                color = GetHeightMapColor(elevation);
+            }
 
             int index = checked((y * _width + x) * 4);
 
