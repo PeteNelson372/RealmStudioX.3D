@@ -44,14 +44,14 @@ namespace RealmStudioX._3D.Models
 
         public Rect3D Bounds { get; private set; }
 
-        private Func<float, float, bool>? _isInsideLandform;
+        private Func<int, int, bool>? _isInsideLandform;
 
         public void Create(
             MapHeightMap heightMap,
             float minimumElevation,
             float maximumElevation,
             float elevationScale,
-            Func<float, float, bool>? isInsideLandform = null)
+            Func<int, int, bool>? isInsideLandform = null)
         {
             ArgumentNullException.ThrowIfNull(heightMap);
 
