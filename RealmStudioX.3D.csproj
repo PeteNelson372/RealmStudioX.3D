@@ -14,7 +14,7 @@
     <PackageReference Include="HelixToolkit.Wpf" Version="3.1.2" />
     <PackageReference Include="HelixToolkit.Wpf.SharpDX" Version="3.1.2" />
     <PackageReference Include="log4net" Version="3.4.0" />
-    <PackageReference Include="SkiaSharp" Version="4.152.0" />
+    <PackageReference Include="SkiaSharp" Version="4.152.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,9 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="RealmStudioShapeRenderingLib">
-      <HintPath>..\RealmStudioShapeRenderingLib\bin\Debug\net8.0\RealmStudioShapeRenderingLib.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\RealmStudioShapeRenderingLib\RealmStudioShapeRenderingLib.csproj" />
   </ItemGroup>
 
 </Project>
