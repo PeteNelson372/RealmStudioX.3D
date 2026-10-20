@@ -2,12 +2,9 @@
 using HelixToolkit.Maths;
 using HelixToolkit.SharpDX;
 using HelixToolkit.Wpf.SharpDX;
-using Microsoft.VisualBasic.ApplicationServices;
 using RealmStudioShapeRenderingLib;
 using SkiaSharp;
-using System.IO;
 using System.Numerics;
-using System.Runtime.InteropServices;
 using System.Windows.Media.Media3D;
 using MeshGeometry3D = HelixToolkit.SharpDX.MeshGeometry3D;
 
