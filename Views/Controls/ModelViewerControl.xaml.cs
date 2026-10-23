@@ -373,39 +373,12 @@ namespace RealmStudioX._3D.Views.Controls
 
                 Model3D? model = importer.Load(fileName);
 
-                if (model == null)
+                if (model is null)
                 {
                     return;
                 }
 
-                ModelGroup.Children.Clear();
-
-                if (model is Model3DGroup modelGroup)
-                {
-                    foreach (Model3D child in modelGroup.Children)
-                    {
-                        ModelGroup.Children.Add(child);
-                    }
-                }
-                else
-                {
-                    ModelGroup.Children.Add(model);
-                }
-
-                _isModelLoaded = true;
-
-                CalculateModelBounds();
-                FitModel(_modelBounds);
-                ShowGrid(_showGrid);
-
-                UpdateBoundingBox();
-                UpdateWireframe();
-
-                HelixTKViewport.Children.Add(_boundingBoxVisual);
-                ShowBoundingBox(_showBoundingBox);
-
-                HelixTKViewport.Children.Add(_wireframeVisual);
-                ShowWireframe(_showWireframe);
+                SetModel(model);
             }
             catch (Exception ex)
             {
@@ -414,6 +387,38 @@ namespace RealmStudioX._3D.Views.Controls
                 // RealmStudioX logging
                 RealmStudioXLogger.Error(ex.Message);
             }
+        }
+
+        public void SetModel(Model3D model, bool fitCamera = true)
+        {
+            ArgumentNullException.ThrowIfNull(model);
+
+            ModelGroup.Children.Clear();
+            ModelGroup.Children.Add(ModelDirectionalLight);
+            ModelGroup.Children.Add(model);
+
+            IsModelLoaded = true;
+
+            CalculateModelBounds();
+
+            if (fitCamera)
+            {
+                FitModel(_modelBounds);
+            }
+
+            ShowGrid(_showGrid);
+            UpdateBoundingBox();
+            ShowBoundingBox(_showBoundingBox);
+            UpdateWireframe();
+            ShowWireframe(_showWireframe);
+        }
+
+        public void ClearModel()
+        {
+            ModelGroup.Children.Clear();
+            ModelGroup.Children.Add(ModelDirectionalLight);
+
+            IsModelLoaded = false;
         }
 
         private void CalculateModelBounds()
@@ -538,8 +543,6 @@ namespace RealmStudioX._3D.Views.Controls
                     AddWireframe(child, points);
             }
         }
-
-
 
         private static void AddMeshWireframe(
             MeshGeometry3D mesh,
@@ -679,6 +682,14 @@ namespace RealmStudioX._3D.Views.Controls
             FitModel(_modelBounds);
         }
 
+        private ModelUpDirection _currentUpDirection = ModelUpDirection.YUp;
+
+        public ModelUpDirection CurrentUpDirection
+        {
+            get => _currentUpDirection;
+            set => _currentUpDirection = value;
+        }
+
         public void SetUpDirection(ModelUpDirection upDirection)
         {
             if (HelixTKViewport.Camera == null)
@@ -717,6 +728,7 @@ namespace RealmStudioX._3D.Views.Controls
                 return;
 
             HelixTKViewport.Camera.UpDirection = up;
+            CurrentUpDirection = upDirection;
 
             FitModel(_modelBounds);
         }
@@ -781,7 +793,28 @@ namespace RealmStudioX._3D.Views.Controls
                 HelixTKViewport.Children.Remove(_wireframeVisual);
             }
         }
+        public void SetCameraRotationEnabled(bool enabled)
+        {
+            HelixTKViewport.IsRotationEnabled = enabled;
+        }
 
+        public void SetBackground(ImageSource? imageSource)
+        {
+            if (imageSource is null)
+            {
+                HelixTKViewport.Background = Brushes.WhiteSmoke;
+                return;
+            }
+
+            ImageBrush brush = new(imageSource)
+            {
+                Stretch = Stretch.UniformToFill
+            };
+
+            brush.Freeze();
+
+            HelixTKViewport.Background = brush;
+        }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
