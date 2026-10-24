@@ -816,6 +816,14 @@ namespace RealmStudioX._3D.Views.Controls
             HelixTKViewport.Background = brush;
         }
 
+        public void SetBackgroundColor(Color color)
+        {
+            SolidColorBrush brush = new(color);
+            brush.Freeze();
+
+            HelixTKViewport.Background = brush;
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
