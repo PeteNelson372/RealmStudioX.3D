@@ -26,6 +26,8 @@ namespace RealmStudioX._3D.Views.Controls
         private bool _showGrid = false;
         private bool _showBoundingBox = false;
 
+        public ProjectionCamera? Camera => HelixTKViewport.Camera;
+
         private readonly LinesVisual3D _boundingBoxVisual = new()
         {
             Color = Colors.Red,

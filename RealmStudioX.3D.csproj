@@ -14,7 +14,7 @@
     <PackageReference Include="HelixToolkit.Wpf" Version="3.1.2" />
     <PackageReference Include="HelixToolkit.Wpf.SharpDX" Version="3.1.2" />
     <PackageReference Include="log4net" Version="3.5.0" />
-    <PackageReference Include="SkiaSharp" Version="4.153.1" />
+    <PackageReference Include="SkiaSharp" Version="4.154.0" />
   </ItemGroup>
 
   <ItemGroup>
