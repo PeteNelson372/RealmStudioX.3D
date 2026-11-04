@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 
@@ -579,6 +580,14 @@ namespace RealmStudioX._3D.Views.Controls
         {
             InitializeCamera();
             FitModel(_modelBounds);
+        }
+
+        public void TranslateCamera(Vector3D offset)
+        {
+            if (HelixTKViewport.Camera is not ProjectionCamera camera)
+                return;
+
+            camera.Position += offset;
         }
 
         public void SetCameraProjection(CameraProjection projection)
