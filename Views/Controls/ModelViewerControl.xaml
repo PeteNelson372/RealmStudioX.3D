@@ -48,7 +48,7 @@
                                 ShowCoordinateSystem="True"
                                 IsInertiaEnabled="False">
 
-                                <htk:DefaultLights />
+                                <htk:DefaultLights x:Name="DefaultLightsVisual" />
 
                                 <ModelVisual3D>
                                     <ModelVisual3D.Content>

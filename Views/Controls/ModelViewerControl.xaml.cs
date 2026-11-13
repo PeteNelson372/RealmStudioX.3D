@@ -101,6 +101,43 @@ namespace RealmStudioX._3D.Views.Controls
             set { SetProperty(ref _isModelLoaded, value); }
         }
 
+        private bool _useDefaultLighting = true;
+
+        public bool UseDefaultLighting
+        {
+            get => _useDefaultLighting;
+            set
+            {
+                if (_useDefaultLighting == value)
+                    return;
+
+                _useDefaultLighting = value;
+                UpdateDefaultLighting();
+            }
+        }
+
+        private void UpdateDefaultLighting()
+        {
+            if (_useDefaultLighting)
+            {
+                // Restore HelixToolkit's default lighting.
+                if (!HelixTKViewport.Children.Contains(DefaultLightsVisual))
+                    HelixTKViewport.Children.Add(DefaultLightsVisual);
+
+                // Restore the explicit directional light.
+                if (!ModelGroup.Children.Contains(ModelDirectionalLight))
+                    ModelGroup.Children.Insert(0, ModelDirectionalLight);
+            }
+            else
+            {
+                // Remove HelixToolkit's default lighting.
+                HelixTKViewport.Children.Remove(DefaultLightsVisual);
+
+                // Remove the explicit directional light.
+                ModelGroup.Children.Remove(ModelDirectionalLight);
+            }
+        }
+
         public void FitModel(Rect3D? bounds)
         {
             if (HelixTKViewport.Camera == null)
@@ -397,7 +434,12 @@ namespace RealmStudioX._3D.Views.Controls
             ArgumentNullException.ThrowIfNull(model);
 
             ModelGroup.Children.Clear();
-            ModelGroup.Children.Add(ModelDirectionalLight);
+
+            if (_useDefaultLighting)
+            {
+                ModelGroup.Children.Add(ModelDirectionalLight);
+            }
+
             ModelGroup.Children.Add(model);
 
             IsModelLoaded = true;
@@ -419,7 +461,11 @@ namespace RealmStudioX._3D.Views.Controls
         public void ClearModel()
         {
             ModelGroup.Children.Clear();
-            ModelGroup.Children.Add(ModelDirectionalLight);
+
+            if (_useDefaultLighting)
+            {
+                ModelGroup.Children.Add(ModelDirectionalLight);
+            }
 
             IsModelLoaded = false;
         }
