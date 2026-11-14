@@ -1,12 +1,17 @@
 ﻿using HelixToolkit.Wpf;
 using RealmStudioShapeRenderingLib;
 using RealmStudioShapeRenderingLib.Logging;
+using RealmStudioX._3D.Processing;
+using RealmStudioX._3D.ShaderEffects;
+using RealmStudioX.Core;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Effects;
 using System.Windows.Media.Media3D;
 
 namespace RealmStudioX._3D.Views.Controls
@@ -24,10 +29,140 @@ namespace RealmStudioX._3D.Views.Controls
         private const double OrthographicNearPlane = -1_000_000.0;
         private const double CameraFarPlane = 1_000_000.0;
 
+        private readonly PostProcessingPipeline _postProcessingPipeline;
+
         private bool _showGrid = false;
         private bool _showBoundingBox = false;
 
         public ProjectionCamera? Camera => HelixTKViewport.Camera;
+
+        private readonly StarScintillationEffect _starTwinkleEffect = new();
+
+        private bool _backgroundTwinkleEnabled;
+
+
+        public double ViewportAspectRatio
+        {
+            get
+            {
+                double width = HelixTKViewport.ActualWidth;
+                double height = HelixTKViewport.ActualHeight;
+
+                return width > 0.0 && height > 0.0
+                    ? width / height
+                    : 1.0;
+            }
+        }
+
+        /// <summary>
+        /// Projects a 3D world position into normalized viewport coordinates.
+        /// The resulting coordinates range from 0 to 1, with (0,0) at
+        /// the upper-left corner.
+        /// </summary>
+        public bool TryProjectPointToViewport(
+            Point3D worldPosition,
+            out Point normalizedPosition)
+        {
+            normalizedPosition = default;
+
+            ProjectionCamera? camera = HelixTKViewport.Camera;
+
+            double width = HelixTKViewport.ActualWidth;
+            double height = HelixTKViewport.ActualHeight;
+
+            if (camera is null || width <= 0.0 || height <= 0.0)
+                return false;
+
+            double aspect = width / height;
+
+            Vector3D forward = camera.LookDirection;
+
+            if (forward.LengthSquared < 1e-12)
+                return false;
+
+            forward.Normalize();
+
+            Vector3D up = camera.UpDirection;
+
+            if (up.LengthSquared < 1e-12)
+                return false;
+
+            up.Normalize();
+
+            Vector3D right = Vector3D.CrossProduct(forward, up);
+
+            if (right.LengthSquared < 1e-12)
+                return false;
+
+            right.Normalize();
+
+            // Re-orthogonalize the camera's up vector.
+            up = Vector3D.CrossProduct(right, forward);
+            up.Normalize();
+
+            Vector3D toPoint = worldPosition - camera.Position;
+
+            double depth = Vector3D.DotProduct(toPoint, forward);
+
+            if (!double.IsFinite(depth) ||
+                depth <= Math.Max(camera.NearPlaneDistance, 0.0001) ||
+                depth >= camera.FarPlaneDistance)
+            {
+                return false;
+            }
+
+            double horizontal = Vector3D.DotProduct(toPoint, right);
+            double vertical = Vector3D.DotProduct(toPoint, up);
+
+            double screenX;
+            double screenY;
+
+            if (camera is PerspectiveCamera perspective)
+            {
+                double verticalFov =
+                    perspective.FieldOfView * Math.PI / 180.0;
+
+                if (verticalFov <= 0.0 || verticalFov >= Math.PI)
+                    return false;
+
+                double halfHeight =
+                    depth * Math.Tan(verticalFov / 2.0);
+
+                double halfWidth = halfHeight * aspect;
+
+                if (halfWidth <= 0.0 || halfHeight <= 0.0)
+                    return false;
+
+                screenX = 0.5 + horizontal / (2.0 * halfWidth);
+                screenY = 0.5 - vertical / (2.0 * halfHeight);
+            }
+            else if (camera is OrthographicCamera orthographic)
+            {
+                double halfWidth = orthographic.Width / 2.0;
+                double halfHeight = halfWidth / aspect;
+
+                if (halfWidth <= 0.0 || halfHeight <= 0.0)
+                    return false;
+
+                screenX = 0.5 + horizontal / (2.0 * halfWidth);
+                screenY = 0.5 - vertical / (2.0 * halfHeight);
+            }
+            else
+            {
+                return false;
+            }
+
+            if (!double.IsFinite(screenX) || !double.IsFinite(screenY))
+                return false;
+
+            normalizedPosition = new Point(screenX, screenY);
+
+            return screenX >= 0.0 &&
+                   screenX <= 1.0 &&
+                   screenY >= 0.0 &&
+                   screenY <= 1.0;
+        }
+
 
         private readonly LinesVisual3D _boundingBoxVisual = new()
         {
@@ -59,6 +194,9 @@ namespace RealmStudioX._3D.Views.Controls
         public ModelViewerControl()
         {
             InitializeComponent();
+
+            _postProcessingPipeline = new PostProcessingPipeline(PostProcessingHost);
+
             InitializeCamera();
 
             HelixTKViewport.PanGesture = default!;
@@ -116,6 +254,14 @@ namespace RealmStudioX._3D.Views.Controls
             }
         }
 
+        public Brush CreateBloomSceneBrush()
+        {
+            return new VisualBrush(HelixTKViewport)
+            {
+                Stretch = Stretch.Fill
+            };
+        }
+
         private void UpdateDefaultLighting()
         {
             if (_useDefaultLighting)
@@ -136,6 +282,11 @@ namespace RealmStudioX._3D.Views.Controls
                 // Remove the explicit directional light.
                 ModelGroup.Children.Remove(ModelDirectionalLight);
             }
+        }
+
+        public void SetPostProcessingEffects(IEnumerable<Effect?> effects)
+        {
+            _postProcessingPipeline.SetEffects(effects);
         }
 
         public void FitModel(Rect3D? bounds)
@@ -859,7 +1010,8 @@ namespace RealmStudioX._3D.Views.Controls
         {
             if (imageSource is null)
             {
-                HelixTKViewport.Background = Brushes.WhiteSmoke;
+                BackgroundRectangle.Fill = Brushes.WhiteSmoke;
+                UpdateBackgroundScintillation();
                 return;
             }
 
@@ -870,7 +1022,9 @@ namespace RealmStudioX._3D.Views.Controls
 
             brush.Freeze();
 
-            HelixTKViewport.Background = brush;
+            BackgroundRectangle.Fill = brush;
+
+            UpdateBackgroundScintillation();
         }
 
         public void SetBackgroundColor(Color color)
@@ -878,7 +1032,72 @@ namespace RealmStudioX._3D.Views.Controls
             SolidColorBrush brush = new(color);
             brush.Freeze();
 
-            HelixTKViewport.Background = brush;
+            BackgroundRectangle.Fill = brush;
+
+            UpdateBackgroundScintillation();
+        }
+
+        public void SetBackgroundScintillation(
+            bool enabled,
+            float intensity,
+            float speed,
+            float threshold,
+            float contrastThreshold,
+            float maximumStarSize)
+        {
+            _backgroundTwinkleEnabled = enabled;
+
+            _starTwinkleEffect.Intensity =
+                Math.Clamp(intensity, 0.0f, 2.0f);
+
+            _starTwinkleEffect.Speed =
+                Math.Clamp(speed, 0.1f, 4.0f);
+
+            _starTwinkleEffect.Threshold =
+                Math.Clamp(threshold, 0.0f, 1.0f);
+
+            _starTwinkleEffect.ContrastThreshold =
+                Math.Clamp(contrastThreshold, 0.0f, 1.0f);
+
+            _starTwinkleEffect.MaximumStarSize =
+                Math.Clamp(maximumStarSize, 1.0f, 8.0f);
+
+            UpdateBackgroundScintillation();
+        }
+
+        private void UpdateBackgroundScintillation()
+        {
+            // Scintillation is specifically for bitmap backgrounds.
+            // Solid-color backgrounds and other brushes are left untouched.
+            if (!_backgroundTwinkleEnabled ||
+                BackgroundRectangle.Fill is not ImageBrush imageBrush)
+            {
+                if (ReferenceEquals(
+                    BackgroundRectangle.Effect,
+                    _starTwinkleEffect))
+                {
+                    BackgroundRectangle.Effect = null;
+                }
+
+                return;
+            }
+
+            _starTwinkleEffect.Input = imageBrush;
+            BackgroundRectangle.Effect = _starTwinkleEffect;
+        }
+
+        public void AdvanceBackgroundScintillation(
+            CelestialAnimationFrame frame)
+        {
+            if (!_backgroundTwinkleEnabled ||
+                !ReferenceEquals(
+                    BackgroundRectangle.Effect,
+                    _starTwinkleEffect))
+            {
+                return;
+            }
+
+            _starTwinkleEffect.Time = (float)frame.TimeSeconds;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

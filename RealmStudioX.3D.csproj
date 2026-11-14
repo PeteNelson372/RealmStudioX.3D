@@ -25,6 +25,88 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RealmStudioShapeRenderingLib\RealmStudioShapeRenderingLib.csproj" />
+    <ProjectReference Include="..\RealmStudioX.Core\RealmStudioX.Core.csproj" />
   </ItemGroup>
 
+  <!-- Direct3D shader compiler configuration -->
+  <PropertyGroup>
+    <FxcPath>C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x86\fxc.exe</FxcPath>
+
+    <ShaderSourceDirectory>$(MSBuildProjectDirectory)\Shaders</ShaderSourceDirectory>
+
+    <ShaderOutputDirectory>$(MSBuildProjectDirectory)\obj\$(Configuration)\$(TargetFramework)\Shaders\</ShaderOutputDirectory>
+  </PropertyGroup>
+
+  <!-- Compile the HLSL pixel shaders -->
+  <Target Name="CompilePixelShaders" BeforeTargets="PrepareForBuild" Inputs="$(FxcPath);&#xD;&#xA;                $(ShaderSourceDirectory)BleachBypassEffect.fx;&#xD;&#xA;                $(ShaderSourceDirectory)CinematicBloomEffect.fx;&#xD;&#xA;                $(ShaderSourceDirectory)GrayscaleEffect.fx;&#xD;&#xA;                $(ShaderSourceDirectory)SepiaEffect.fx;&#xD;&#xA;                $(ShaderSourceDirectory)StarScintillationEffect.fx;&#xD;&#xA;                $(ShaderSourceDirectory)LensFlareEffect.fx;&#xD;&#xA;                $(ShaderSourceDirectory)include\Quad.fxh" Outputs="$(ShaderOutputDirectory)BleachBypassEffect.ps;&#xD;&#xA;                 $(ShaderOutputDirectory)CinematicBloomEffect.ps;&#xD;&#xA;                 $(ShaderOutputDirectory)GrayscaleEffect.ps;&#xD;&#xA;                 $(ShaderOutputDirectory)SepiaEffect.ps;&#xD;&#xA;                 $(ShaderOutputDirectory)StarScintillationEffect.ps;&#xD;&#xA;                 $(ShaderOutputDirectory)LensFlareEffect.ps">
+
+    <!-- Ensure the output directory exists -->
+    <MakeDir Directories="$(ShaderOutputDirectory)" />
+
+    <!-- Bleach Bypass -->
+    <Exec Command="&quot;$(FxcPath)&quot; /Gec /T ps_2_0 /E bypassPS /I&quot;$(ShaderSourceDirectory)&quot; /Fo&quot;$(ShaderOutputDirectory)BleachBypassEffect.ps&quot; &quot;$(ShaderSourceDirectory)\BleachBypassEffect.fx&quot;" />
+
+    <!-- Cinematic Bloom -->
+    <Exec Command="&quot;$(FxcPath)&quot; /Gec /T ps_3_0 /E PS_Bloom /Fo&quot;$(ShaderOutputDirectory)CinematicBloomEffect.ps&quot; &quot;$(ShaderSourceDirectory)\CinematicBloomEffect.fx&quot;" />
+
+    <!-- Grayscale -->
+    <Exec Command="&quot;$(FxcPath)&quot; /Gec /T ps_2_0 /E main /Fo&quot;$(ShaderOutputDirectory)GrayscaleEffect.ps&quot; &quot;$(ShaderSourceDirectory)\GrayscaleEffect.fx&quot;" />
+
+    <!-- Sepia -->
+    <Exec Command="&quot;$(FxcPath)&quot; /Gec /T ps_2_0 /E main /Fo&quot;$(ShaderOutputDirectory)SepiaEffect.ps&quot; &quot;$(ShaderSourceDirectory)\SepiaEffect.fx&quot;" />
+
+    <!-- Lens Flare -->
+    <Exec Command="&quot;$(FxcPath)&quot; /Gec /T ps_3_0 /E main /Fo&quot;$(ShaderOutputDirectory)LensFlareEffect.ps&quot; &quot;$(ShaderSourceDirectory)\LensFlareEffect.fx&quot;" />
+
+    <!-- Star Scintillation -->
+    <Exec Command="&quot;$(FxcPath)&quot; /Gec /T ps_3_0 /E PS_Scintillation /Fo&quot;$(ShaderOutputDirectory)StarScintillationEffect.ps&quot; &quot;$(ShaderSourceDirectory)\StarScintillationEffect.fx&quot;" />
+    
+  </Target>
+
+  <!-- Include compiled shaders in build and publish output -->
+  <ItemGroup>
+    <None Include="$(ShaderOutputDirectory)BleachBypassEffect.ps">
+      <Link>Shaders\BleachBypassEffect.ps</Link>
+      <TargetPath>Shaders\BleachBypassEffect.ps</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+
+    <None Include="$(ShaderOutputDirectory)CinematicBloomEffect.ps">
+      <Link>Shaders\CinematicBloomEffect.ps</Link>
+      <TargetPath>Shaders\CinematicBloomEffect.ps</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+
+    <None Include="$(ShaderOutputDirectory)GrayscaleEffect.ps">
+      <Link>Shaders\GrayscaleEffect.ps</Link>
+      <TargetPath>Shaders\GrayscaleEffect.ps</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+
+    <None Include="$(ShaderOutputDirectory)SepiaEffect.ps">
+      <Link>Shaders\SepiaEffect.ps</Link>
+      <TargetPath>Shaders\SepiaEffect.ps</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+
+    <None Include="$(ShaderOutputDirectory)LensFlareEffect.ps">
+      <Link>Shaders\LensFlareEffect.ps</Link>
+      <TargetPath>Shaders\LensFlareEffect.ps</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+
+    <None Include="$(ShaderOutputDirectory)StarScintillationEffect.ps">
+      <Link>Shaders\StarScintillationEffect.ps</Link>
+      <TargetPath>Shaders\StarScintillationEffect.ps</TargetPath>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+    
+  </ItemGroup>  
+  
 </Project>
