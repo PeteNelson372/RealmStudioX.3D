@@ -12,6 +12,7 @@ using RealmStudioShapeRenderingLib;
 using RealmStudioShapeRenderingLib.Logging;
 using SharpDX.Direct3D11;
 using System.Diagnostics;
+using System.IO;
 using System.Numerics;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -72,6 +73,9 @@ namespace RealmStudioX._3D.Views.Controls
 
             Viewport.EffectsManager = new DefaultEffectsManager();
 
+            CurrentUpDirection = ModelUpDirection.YUp;
+            SetUpDirection(CurrentUpDirection);
+
             CreateDefaultLighting();
             CreateCamera();
         }
@@ -87,6 +91,17 @@ namespace RealmStudioX._3D.Views.Controls
             FillLight.Direction = FillLightDirection;
 
             FillLight.Color = FillLightColor;
+        }
+
+        public void SetBackground(ImageSource? imageSource)
+        {
+            BackgroundImage.Source = imageSource;
+        }
+
+        public void SetBackgroundColor(Color color)
+        {
+            BackgroundImage.Source = null;
+            BackgroundBorder.Background = new SolidColorBrush(color);
         }
 
         // -------------------------
@@ -150,6 +165,50 @@ namespace RealmStudioX._3D.Views.Controls
             ModelBounds = CalculateModelBounds();
 
             FitModel(ModelBounds);
+        }
+
+        public void AddSceneObject(Element3D sceneObject)
+        {
+            ArgumentNullException.ThrowIfNull(sceneObject);
+
+            if (!Viewport.Items.Contains(sceneObject))
+                Viewport.Items.Add(sceneObject);
+        }
+
+        public void RemoveSceneObject(Element3D sceneObject)
+        {
+            ArgumentNullException.ThrowIfNull(sceneObject);
+
+            if (Viewport.Items.Contains(sceneObject))
+                Viewport.Items.Remove(sceneObject);
+        }
+
+        public TextureModel CreateTextureModel(
+            BitmapSource bitmap,
+            out MemoryStream textureStream)
+        {
+            ArgumentNullException.ThrowIfNull(bitmap);
+
+            textureStream = new MemoryStream();
+
+            PngBitmapEncoder encoder = new();
+            encoder.Frames.Add(BitmapFrame.Create(bitmap));
+            encoder.Save(textureStream);
+
+            textureStream.Position = 0;
+
+            TextureModel? textureModel =
+                _textureRepository.Create(textureStream);
+
+            if (textureModel is null)
+            {
+                textureStream.Dispose();
+
+                throw new InvalidOperationException(
+                    "Unable to create a SharpDX texture from the bitmap.");
+            }
+
+            return textureModel;
         }
 
         private static void EnsureUsableMaterials(HelixToolkitScene scene)
@@ -236,7 +295,6 @@ namespace RealmStudioX._3D.Views.Controls
 
             mesh.Normals = normals;
         }
-
 
         private static PhongMaterialCore ConvertDiffuseMaterial(
             DiffuseMaterialCore source)
@@ -396,21 +454,20 @@ namespace RealmStudioX._3D.Views.Controls
             FitModel(_modelBounds);
         }
 
+        private ModelUpDirection _currentUpDirection = ModelUpDirection.YUp;
+
+        public ModelUpDirection CurrentUpDirection
+        {
+            get => _currentUpDirection;
+            set => _currentUpDirection = value;
+        }
+
         public void SetUpDirection(ModelUpDirection upDirection)
         {
             if (Viewport.Camera == null)
                 return;
 
-            var up = upDirection switch
-            {
-                ModelUpDirection.XUp => new Vector3D(1, 0, 0),
-                ModelUpDirection.YUp => new Vector3D(0, 1, 0),
-                ModelUpDirection.ZUp => new Vector3D(0, 0, 1),
-                _ => throw new ArgumentOutOfRangeException(
-                                        nameof(upDirection),
-                                        upDirection,
-                                        null),
-            };
+            Vector3D up = GetUpDirection(upDirection);
 
             Vector3D forward = Viewport.Camera.LookDirection;
 
@@ -419,21 +476,54 @@ namespace RealmStudioX._3D.Views.Controls
 
             forward.Normalize();
 
+            Vector3D currentUp = Viewport.Camera.UpDirection;
+
+            if (currentUp.LengthSquared < 1e-12)
+                return;
+
+            currentUp.Normalize();
+
             //
-            // The up direction must not be parallel to the
-            // viewing direction.
+            // Preserve the existing camera-right direction.
+            //
+
+            Vector3D right =
+                Vector3D.CrossProduct(forward, currentUp);
+
+            if (right.LengthSquared < 1e-12)
+                return;
+
+            right.Normalize();
+
+            //
+            // The new up direction cannot be parallel to the
+            // viewing direction. If it is, calculate a new
+            // viewing direction that preserves camera-right.
             //
 
             double alignment =
-                Math.Abs(
-                    Vector3D.DotProduct(
-                        forward,
-                        up));
+                Math.Abs(Vector3D.DotProduct(forward, up));
 
             if (alignment > 0.999999)
-                return;
+            {
+                forward = Vector3D.CrossProduct(up, right);
+
+                if (forward.LengthSquared < 1e-12)
+                    return;
+
+                forward.Normalize();
+
+                Viewport.Camera.LookDirection = forward;
+            }
+
+            //
+            // Update both the camera and the viewport.
+            //
 
             Viewport.Camera.UpDirection = up;
+            Viewport.ModelUpDirection = up;
+
+            CurrentUpDirection = upDirection;
 
             FitModel(_modelBounds);
         }
@@ -914,11 +1004,15 @@ namespace RealmStudioX._3D.Views.Controls
 
         private void CreateCamera()
         {
+            Vector3D up = GetUpDirection(CurrentUpDirection);
+
+            Viewport.ModelUpDirection = up;
+
             var camera = new PerspectiveCamera
             {
                 Position = new Point3D(5, 5, 5),
                 LookDirection = new Vector3D(-5, -5, -5),
-                UpDirection = new Vector3D(0, 1, 0),
+                UpDirection = up,
                 FieldOfView = 45,
                 NearPlaneDistance = PerspectiveNearPlane,
                 FarPlaneDistance = CameraFarPlane
@@ -926,6 +1020,20 @@ namespace RealmStudioX._3D.Views.Controls
 
             Viewport.Camera = camera;
             Viewport.DefaultCamera = camera;
+        }
+
+        private static Vector3D GetUpDirection(ModelUpDirection upDirection)
+        {
+            return upDirection switch
+            {
+                ModelUpDirection.XUp => new Vector3D(1, 0, 0),
+                ModelUpDirection.YUp => new Vector3D(0, 1, 0),
+                ModelUpDirection.ZUp => new Vector3D(0, 0, 1),
+                _ => throw new ArgumentOutOfRangeException(
+                    nameof(upDirection),
+                    upDirection,
+                    null)
+            };
         }
 
         private Rect3D? CalculateModelBounds()

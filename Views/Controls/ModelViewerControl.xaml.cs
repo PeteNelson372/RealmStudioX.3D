@@ -5,13 +5,13 @@ using RealmStudioX._3D.Processing;
 using RealmStudioX._3D.ShaderEffects;
 using RealmStudioX.Core;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
+using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
 
 namespace RealmStudioX._3D.Views.Controls
@@ -1098,6 +1098,34 @@ namespace RealmStudioX._3D.Views.Controls
             }
 
             _starTwinkleEffect.Time = (float)frame.TimeSeconds;
+        }
+
+        public RenderTargetBitmap CaptureFrame()
+        {
+            if (!IsLoaded ||
+                SceneRoot.ActualWidth <= 0 ||
+                SceneRoot.ActualHeight <= 0)
+            {
+                throw new InvalidOperationException(
+                    "The model viewer is not ready for frame capture.");
+            }
+
+            int width = (int)Math.Round(SceneRoot.ActualWidth);
+            int height = (int)Math.Round(SceneRoot.ActualHeight);
+
+            SceneRoot.UpdateLayout();
+
+            RenderTargetBitmap bitmap = new(
+                width,
+                height,
+                96,
+                96,
+                PixelFormats.Pbgra32);
+
+            bitmap.Render(SceneRoot);
+            bitmap.Freeze();
+
+            return bitmap;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

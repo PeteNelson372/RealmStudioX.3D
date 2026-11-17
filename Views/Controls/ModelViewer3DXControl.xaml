@@ -5,7 +5,7 @@
              xmlns:hx="http://helix-toolkit.org/wpf/SharpDX"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             Background="Black"
+             Background="Transparent"
              mc:Ignorable="d"
              d:DesignHeight="480" d:DesignWidth="640">
 
@@ -14,49 +14,60 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <hx:Viewport3DX
-            x:Name="Viewport"
-            Grid.Row="0"
-            BackgroundColor="GhostWhite"
-            ShowCoordinateSystem="False"
-            ShowViewCube="False"
-            IsRotationEnabled="True"
-            IsPanEnabled="True"
-            IsZoomEnabled="True"
-            EnableDpiScale="True"
-            ZoomAroundMouseDownPoint="False"
-            UseDefaultGestures="False">
+        <Grid Grid.Row="0">
+            <Border x:Name="BackgroundBorder" Background="#050812"/>
+            
+            <Image x:Name="BackgroundImage"
+               Stretch="UniformToFill"
+               IsHitTestVisible="False"/>
 
-            <hx:Viewport3DX.InputBindings>
+            <hx:Viewport3DX
+                x:Name="Viewport"
+                Background="Transparent"
+                BackgroundColor="#00000000"
+                EnableSwapChainRendering="False"
+                FXAALevel="None"
+                OITRenderMode="None"
+                ShowCoordinateSystem="False"
+                ShowViewCube="False"
+                IsRotationEnabled="True"
+                IsPanEnabled="True"
+                IsZoomEnabled="True"
+                EnableDpiScale="True"
+                ZoomAroundMouseDownPoint="False"
+                UseDefaultGestures="False">
 
-                <!-- Left drag = Pan -->
-                <MouseBinding
+                <hx:Viewport3DX.InputBindings>
+
+                    <!-- Left drag = Pan -->
+                    <MouseBinding
                     Gesture="LeftClick"
                     Command="hx:ViewportCommands.Pan" />
 
-                <!-- Right drag = Rotate -->
-                <MouseBinding
+                    <!-- Right drag = Rotate -->
+                    <MouseBinding
                     Gesture="RightClick"
                     Command="hx:ViewportCommands.Rotate" />
 
-            </hx:Viewport3DX.InputBindings>
+                </hx:Viewport3DX.InputBindings>
 
-            <!-- Camera -->
+                <!-- Camera -->
 
-            <!-- Lighting -->
+                <!-- Lighting -->
 
-            <hx:AmbientLight3D x:Name="AmbientLight"
+                <hx:AmbientLight3D x:Name="AmbientLight"
                 Color="#404040" />
 
-            <hx:DirectionalLight3D x:Name="KeyLight"
+                <hx:DirectionalLight3D x:Name="KeyLight"
                 Direction="1,1,1"
                 Color="#909090" />
 
-            <hx:DirectionalLight3D x:Name="FillLight"
+                <hx:DirectionalLight3D x:Name="FillLight"
                 Direction="1,0.5,1"
                 Color="#707070" />
 
-        </hx:Viewport3DX>
+            </hx:Viewport3DX>
+        </Grid>
 
     </Grid>
 
