@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Effects;
 
@@ -7,11 +8,13 @@ namespace RealmStudioX._3D.Processing;
 public sealed class PostProcessingPipeline(ContentControl host)
 {
     private readonly ContentControl _host = host
-            ?? throw new ArgumentNullException(nameof(host));
+        ?? throw new ArgumentNullException(nameof(host));
+
     private readonly UIElement _sceneContent = host.Content as UIElement
-            ?? throw new ArgumentException(
-                "The post-processing host must initially contain a UIElement.",
-                nameof(host));
+        ?? throw new ArgumentException(
+            "The post-processing host must initially contain a UIElement.",
+            nameof(host));
+
     private readonly List<Border> _layers = [];
 
     /// <summary>
@@ -23,9 +26,12 @@ public sealed class PostProcessingPipeline(ContentControl host)
     {
         ArgumentNullException.ThrowIfNull(effects);
 
-        Effect[] activeEffects = [.. effects
-            .Where(effect => effect is not null)
-            .Cast<Effect>()];
+        Effect[] activeEffects =
+        [
+            .. effects
+                .Where(effect => effect is not null)
+                .Cast<Effect>()
+        ];
 
         // Detach the current visual tree from the host.
         _host.Content = null;

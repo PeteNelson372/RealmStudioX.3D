@@ -40,7 +40,6 @@ namespace RealmStudioX._3D.Views.Controls
 
         private bool _backgroundTwinkleEnabled;
 
-
         public double ViewportAspectRatio
         {
             get
@@ -256,7 +255,7 @@ namespace RealmStudioX._3D.Views.Controls
 
         public Brush CreateBloomSceneBrush()
         {
-            return new VisualBrush(HelixTKViewport)
+            return new VisualBrush(SceneGrid)
             {
                 Stretch = Stretch.Fill
             };

@@ -46,20 +46,35 @@
     <!-- Bleach Bypass -->
     <Exec Command="&quot;$(FxcPath)&quot; /Gec /T ps_2_0 /E bypassPS /I&quot;$(ShaderSourceDirectory)&quot; /Fo&quot;$(ShaderOutputDirectory)BleachBypassEffect.ps&quot; &quot;$(ShaderSourceDirectory)\BleachBypassEffect.fx&quot;" />
 
-    <!-- Cinematic Bloom -->
-    <Exec Command="&quot;$(FxcPath)&quot; /Gec /T ps_3_0 /E PS_Bloom /Fo&quot;$(ShaderOutputDirectory)CinematicBloomEffect.ps&quot; &quot;$(ShaderSourceDirectory)\CinematicBloomEffect.fx&quot;" />
+    <!-- NVidia Bloom -->
+    <Exec Command="&quot;$(FxcPath)&quot; /Gec /O3 /T ps_2_0 /E main /Fo&quot;$(ShaderOutputDirectory)NvidiaBloomDownsampleEffect.ps&quot; &quot;$(ShaderSourceDirectory)\NvidiaBloomDownsampleEffect.fx&quot;" />
 
+    <Exec Command="&quot;$(FxcPath)&quot; /Gec /O3 /T ps_2_0 /E main /Fo&quot;$(ShaderOutputDirectory)NvidiaBloomHorizontalBlurEffect.ps&quot; &quot;$(ShaderSourceDirectory)\NvidiaBloomHorizontalBlurEffect.fx&quot;" />
+
+    <Exec Command="&quot;$(FxcPath)&quot; /Gec /O3 /T ps_2_0 /E main /Fo&quot;$(ShaderOutputDirectory)NvidiaBloomVerticalBlurEffect.ps&quot; &quot;$(ShaderSourceDirectory)\NvidiaBloomVerticalBlurEffect.fx&quot;" />
+
+    <Exec Command="&quot;$(FxcPath)&quot; /Gec /O3 /T ps_2_0 /E main /Fo&quot;$(ShaderOutputDirectory)NvidiaBloomCompositeEffect.ps&quot; &quot;$(ShaderSourceDirectory)\NvidiaBloomCompositeEffect.fx&quot;" />
+    
     <!-- Grayscale -->
     <Exec Command="&quot;$(FxcPath)&quot; /Gec /T ps_2_0 /E main /Fo&quot;$(ShaderOutputDirectory)GrayscaleEffect.ps&quot; &quot;$(ShaderSourceDirectory)\GrayscaleEffect.fx&quot;" />
 
     <!-- Sepia -->
     <Exec Command="&quot;$(FxcPath)&quot; /Gec /T ps_2_0 /E main /Fo&quot;$(ShaderOutputDirectory)SepiaEffect.ps&quot; &quot;$(ShaderSourceDirectory)\SepiaEffect.fx&quot;" />
 
-    <!-- Lens Flare -->
-    <Exec Command="&quot;$(FxcPath)&quot; /Gec /T ps_3_0 /E main /Fo&quot;$(ShaderOutputDirectory)LensFlareEffect.ps&quot; &quot;$(ShaderSourceDirectory)\LensFlareEffect.fx&quot;" />
+    <!-- Lens Flare Core -->
+    <Exec Command="&quot;$(FxcPath)&quot; /Gec /O3 /T ps_2_0 /E main /I&quot;$(ShaderSourceDirectory)&quot; /Fo&quot;$(ShaderOutputDirectory)LensFlareCoreEffect.ps&quot; &quot;$(ShaderSourceDirectory)\LensFlareCoreEffect.fx&quot;" />
+
+    <!-- Lens Flare Streak -->
+    <Exec Command="&quot;$(FxcPath)&quot; /Gec /O3 /T ps_2_0 /E main /I&quot;$(ShaderSourceDirectory)&quot; /Fo&quot;$(ShaderOutputDirectory)LensFlareStreakEffect.ps&quot; &quot;$(ShaderSourceDirectory)\LensFlareStreakEffect.fx&quot;" />
+
+    <!-- Lens Flare Ghosts -->
+    <Exec Command="&quot;$(FxcPath)&quot; /Gec /O3 /T ps_2_0 /E main /I&quot;$(ShaderSourceDirectory)&quot; /Fo&quot;$(ShaderOutputDirectory)LensFlareGhostEffect.ps&quot; &quot;$(ShaderSourceDirectory)\LensFlareGhostEffect.fx&quot;" />
+
+    <!-- Lens Flare Starburst -->
+    <Exec Command="&quot;$(FxcPath)&quot; /Gec /O3 /T ps_2_0 /E main /I&quot;$(ShaderSourceDirectory)&quot; /Fo&quot;$(ShaderOutputDirectory)LensFlareStarburstEffect.ps&quot; &quot;$(ShaderSourceDirectory)\LensFlareStarburstEffect.fx&quot;" />    
 
     <!-- Star Scintillation -->
-    <Exec Command="&quot;$(FxcPath)&quot; /Gec /T ps_3_0 /E PS_Scintillation /Fo&quot;$(ShaderOutputDirectory)StarScintillationEffect.ps&quot; &quot;$(ShaderSourceDirectory)\StarScintillationEffect.fx&quot;" />
+    <Exec Command="&quot;$(FxcPath)&quot; /Gec /T ps_2_0 /E PS_Scintillation /Fo&quot;$(ShaderOutputDirectory)StarScintillationEffect.ps&quot; &quot;$(ShaderSourceDirectory)\StarScintillationEffect.fx&quot;" />
     
   </Target>
 
@@ -71,6 +86,16 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
+    <None Remove="C:\Users\Pete Nelson\source\repos\RealmStudioX.3D\obj\Debug\net8.0-windows\Shaders\CinematicBloomEffect.ps" />
+    <None Remove="C:\Users\Pete Nelson\source\repos\RealmStudioX.3D\obj\Debug\net8.0-windows\Shaders\CinematicBloomEffect.ps" />
+    <None Remove="C:\Users\Pete Nelson\source\repos\RealmStudioX.3D\obj\Debug\net8.0-windows\Shaders\CinematicBloomEffect.ps" />
+    <None Remove="C:\Users\Pete Nelson\source\repos\RealmStudioX.3D\obj\Debug\net8.0-windows\Shaders\CinematicBloomEffect.ps" />
+    <None Remove="C:\Users\Pete Nelson\source\repos\RealmStudioX.3D\obj\Debug\net8.0-windows\Shaders\CinematicBloomEffect.ps" />
+    <None Remove="C:\Users\Pete Nelson\source\repos\RealmStudioX.3D\obj\Debug\net8.0-windows\Shaders\CinematicBloomEffect.ps" />
+    <None Remove="C:\Users\Pete Nelson\source\repos\RealmStudioX.3D\obj\Debug\net8.0-windows\Shaders\CinematicBloomEffect.ps" />
+    <None Remove="C:\Users\Pete Nelson\source\repos\RealmStudioX.3D\obj\Debug\net8.0-windows\Shaders\CinematicBloomEffect.ps" />
+    <None Remove="C:\Users\Pete Nelson\source\repos\RealmStudioX.3D\obj\Debug\net8.0-windows\Shaders\CinematicBloomEffect.ps" />
+    <None Remove="C:\Users\Pete Nelson\source\repos\RealmStudioX.3D\obj\Debug\net8.0-windows\Shaders\CinematicBloomEffect.ps" />
 
     <None Include="$(ShaderOutputDirectory)CinematicBloomEffect.ps">
       <Link>Shaders\CinematicBloomEffect.ps</Link>
@@ -93,12 +118,21 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>
 
-    <None Include="$(ShaderOutputDirectory)LensFlareEffect.ps">
-      <Link>Shaders\LensFlareEffect.ps</Link>
-      <TargetPath>Shaders\LensFlareEffect.ps</TargetPath>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </None>
+    <None Include="$(ShaderOutputDirectory)LensFlareCoreEffect.ps" Link="Shaders\LensFlareCoreEffect.ps" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+
+    <None Include="$(ShaderOutputDirectory)LensFlareStreakEffect.ps" Link="Shaders\LensFlareStreakEffect.ps" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+
+    <None Include="$(ShaderOutputDirectory)LensFlareGhostEffect.ps" Link="Shaders\LensFlareGhostEffect.ps" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+
+    <None Include="$(ShaderOutputDirectory)LensFlareStarburstEffect.ps" Link="Shaders\LensFlareStarburstEffect.ps" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+
+    <None Include="$(ShaderOutputDirectory)NvidiaBloomDownsampleEffect.ps" Link="Shaders\NvidiaBloomDownsampleEffect.ps" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+
+    <None Include="$(ShaderOutputDirectory)NvidiaBloomHorizontalBlurEffect.ps" Link="Shaders\NvidiaBloomHorizontalBlurEffect.ps" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+
+    <None Include="$(ShaderOutputDirectory)NvidiaBloomVerticalBlurEffect.ps" Link="Shaders\NvidiaBloomVerticalBlurEffect.ps" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+
+    <None Include="$(ShaderOutputDirectory)NvidiaBloomCompositeEffect.ps" Link="Shaders\NvidiaBloomCompositeEffect.ps" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
 
     <None Include="$(ShaderOutputDirectory)StarScintillationEffect.ps">
       <Link>Shaders\StarScintillationEffect.ps</Link>

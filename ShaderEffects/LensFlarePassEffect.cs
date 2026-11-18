@@ -6,21 +6,19 @@ using Point = System.Windows.Point;
 
 namespace RealmStudioX._3D.ShaderEffects;
 
-public sealed class LensFlareEffect : ShaderEffect
+public abstract class LensFlarePassEffect : ShaderEffect
 {
-    private static readonly PixelShader _pixelShader = new()
+    protected LensFlarePassEffect(string shaderFile)
     {
-        UriSource = new Uri(
-            Path.Combine(
-                AppContext.BaseDirectory,
-                "Shaders",
-                "LensFlareEffect.ps"),
-            UriKind.Absolute)
-    };
-
-    public LensFlareEffect()
-    {
-        PixelShader = _pixelShader;
+        PixelShader = new PixelShader
+        {
+            UriSource = new Uri(
+                Path.Combine(
+                    AppContext.BaseDirectory,
+                    "Shaders",
+                    shaderFile),
+                UriKind.Absolute)
+        };
 
         UpdateShaderValue(InputProperty);
         UpdateShaderValue(SourcePositionProperty);
@@ -34,9 +32,9 @@ public sealed class LensFlareEffect : ShaderEffect
     }
 
     public static readonly DependencyProperty InputProperty =
-        ShaderEffect.RegisterPixelShaderSamplerProperty(
+        RegisterPixelShaderSamplerProperty(
             nameof(Input),
-            typeof(LensFlareEffect),
+            typeof(LensFlarePassEffect),
             0);
 
     public Brush Input
@@ -49,7 +47,7 @@ public sealed class LensFlareEffect : ShaderEffect
         DependencyProperty.Register(
             nameof(SourcePosition),
             typeof(Point),
-            typeof(LensFlareEffect),
+            typeof(LensFlarePassEffect),
             new UIPropertyMetadata(
                 new Point(0.5, 0.5),
                 PixelShaderConstantCallback(0)));
@@ -64,7 +62,7 @@ public sealed class LensFlareEffect : ShaderEffect
         DependencyProperty.Register(
             nameof(AspectRatio),
             typeof(float),
-            typeof(LensFlareEffect),
+            typeof(LensFlarePassEffect),
             new UIPropertyMetadata(
                 1.0f,
                 PixelShaderConstantCallback(1)));
@@ -79,7 +77,7 @@ public sealed class LensFlareEffect : ShaderEffect
         DependencyProperty.Register(
             nameof(Intensity),
             typeof(float),
-            typeof(LensFlareEffect),
+            typeof(LensFlarePassEffect),
             new UIPropertyMetadata(
                 0.8f,
                 PixelShaderConstantCallback(2)));
@@ -94,7 +92,7 @@ public sealed class LensFlareEffect : ShaderEffect
         DependencyProperty.Register(
             nameof(GlowSize),
             typeof(float),
-            typeof(LensFlareEffect),
+            typeof(LensFlarePassEffect),
             new UIPropertyMetadata(
                 0.035f,
                 PixelShaderConstantCallback(3)));
@@ -109,7 +107,7 @@ public sealed class LensFlareEffect : ShaderEffect
         DependencyProperty.Register(
             nameof(StreakLength),
             typeof(float),
-            typeof(LensFlareEffect),
+            typeof(LensFlarePassEffect),
             new UIPropertyMetadata(
                 0.65f,
                 PixelShaderConstantCallback(4)));
@@ -124,7 +122,7 @@ public sealed class LensFlareEffect : ShaderEffect
         DependencyProperty.Register(
             nameof(GhostIntensity),
             typeof(float),
-            typeof(LensFlareEffect),
+            typeof(LensFlarePassEffect),
             new UIPropertyMetadata(
                 0.35f,
                 PixelShaderConstantCallback(5)));
@@ -139,7 +137,7 @@ public sealed class LensFlareEffect : ShaderEffect
         DependencyProperty.Register(
             nameof(StarburstIntensity),
             typeof(float),
-            typeof(LensFlareEffect),
+            typeof(LensFlarePassEffect),
             new UIPropertyMetadata(
                 0.2f,
                 PixelShaderConstantCallback(6)));
@@ -154,7 +152,7 @@ public sealed class LensFlareEffect : ShaderEffect
         DependencyProperty.Register(
             nameof(SourceVisibility),
             typeof(float),
-            typeof(LensFlareEffect),
+            typeof(LensFlarePassEffect),
             new UIPropertyMetadata(
                 0.0f,
                 PixelShaderConstantCallback(7)));
@@ -163,5 +161,37 @@ public sealed class LensFlareEffect : ShaderEffect
     {
         get => (float)GetValue(SourceVisibilityProperty);
         set => SetValue(SourceVisibilityProperty, value);
+    }
+}
+
+public sealed class LensFlareCoreEffect : LensFlarePassEffect
+{
+    public LensFlareCoreEffect()
+        : base("LensFlareCoreEffect.ps")
+    {
+    }
+}
+
+public sealed class LensFlareStreakEffect : LensFlarePassEffect
+{
+    public LensFlareStreakEffect()
+        : base("LensFlareStreakEffect.ps")
+    {
+    }
+}
+
+public sealed class LensFlareGhostEffect : LensFlarePassEffect
+{
+    public LensFlareGhostEffect()
+        : base("LensFlareGhostEffect.ps")
+    {
+    }
+}
+
+public sealed class LensFlareStarburstEffect : LensFlarePassEffect
+{
+    public LensFlareStarburstEffect()
+        : base("LensFlareStarburstEffect.ps")
+    {
     }
 }
