@@ -14,6 +14,7 @@ using SharpDX.Direct3D11;
 using System.Diagnostics;
 using System.IO;
 using System.Numerics;
+using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
@@ -92,6 +93,30 @@ namespace RealmStudioX._3D.Views.Controls
 
             FillLight.Color = FillLightColor;
         }
+
+
+        public void SetDefaultLightingEnabled(bool enabled)
+        {
+            Visibility visibility = enabled
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+
+            AmbientLight.Visibility = visibility;
+            KeyLight.Visibility = visibility;
+            FillLight.Visibility = visibility;
+        }
+
+
+        public void SetAmbientLight(Color color, bool enabled)
+        {
+            AmbientLight.Color = color;
+
+            AmbientLight.Visibility = enabled
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+        }
+
+
 
         public void SetBackground(ImageSource? imageSource)
         {
