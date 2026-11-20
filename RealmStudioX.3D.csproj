@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net11.0-windows7.0</TargetFramework>
     <RootNamespace>RealmStudioX._3D</RootNamespace>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
@@ -83,23 +83,6 @@
     <None Include="$(ShaderOutputDirectory)BleachBypassEffect.ps">
       <Link>Shaders\BleachBypassEffect.ps</Link>
       <TargetPath>Shaders\BleachBypassEffect.ps</TargetPath>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </None>
-    <None Remove="C:\Users\Pete Nelson\source\repos\RealmStudioX.3D\obj\Debug\net8.0-windows\Shaders\CinematicBloomEffect.ps" />
-    <None Remove="C:\Users\Pete Nelson\source\repos\RealmStudioX.3D\obj\Debug\net8.0-windows\Shaders\CinematicBloomEffect.ps" />
-    <None Remove="C:\Users\Pete Nelson\source\repos\RealmStudioX.3D\obj\Debug\net8.0-windows\Shaders\CinematicBloomEffect.ps" />
-    <None Remove="C:\Users\Pete Nelson\source\repos\RealmStudioX.3D\obj\Debug\net8.0-windows\Shaders\CinematicBloomEffect.ps" />
-    <None Remove="C:\Users\Pete Nelson\source\repos\RealmStudioX.3D\obj\Debug\net8.0-windows\Shaders\CinematicBloomEffect.ps" />
-    <None Remove="C:\Users\Pete Nelson\source\repos\RealmStudioX.3D\obj\Debug\net8.0-windows\Shaders\CinematicBloomEffect.ps" />
-    <None Remove="C:\Users\Pete Nelson\source\repos\RealmStudioX.3D\obj\Debug\net8.0-windows\Shaders\CinematicBloomEffect.ps" />
-    <None Remove="C:\Users\Pete Nelson\source\repos\RealmStudioX.3D\obj\Debug\net8.0-windows\Shaders\CinematicBloomEffect.ps" />
-    <None Remove="C:\Users\Pete Nelson\source\repos\RealmStudioX.3D\obj\Debug\net8.0-windows\Shaders\CinematicBloomEffect.ps" />
-    <None Remove="C:\Users\Pete Nelson\source\repos\RealmStudioX.3D\obj\Debug\net8.0-windows\Shaders\CinematicBloomEffect.ps" />
-
-    <None Include="$(ShaderOutputDirectory)CinematicBloomEffect.ps">
-      <Link>Shaders\CinematicBloomEffect.ps</Link>
-      <TargetPath>Shaders\CinematicBloomEffect.ps</TargetPath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </None>

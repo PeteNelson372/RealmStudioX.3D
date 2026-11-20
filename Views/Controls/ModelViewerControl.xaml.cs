@@ -717,7 +717,6 @@ namespace RealmStudioX._3D.Views.Controls
             };
         }
 
-
         private void UpdateWireframe()
         {
             Point3DCollection points = new();
