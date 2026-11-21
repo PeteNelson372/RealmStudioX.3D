@@ -3,7 +3,7 @@ using RealmStudioShapeRenderingLib;
 using RealmStudioShapeRenderingLib.Logging;
 using RealmStudioX._3D.Processing;
 using RealmStudioX._3D.ShaderEffects;
-using RealmStudioX.Core;
+using RealmStudioX.Core.Celestial;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
