@@ -36,6 +36,31 @@ namespace RealmStudioX._3D.Views.Controls
 
         public ProjectionCamera? Camera => HelixTKViewport.Camera;
 
+        public PerspectiveCameraSettings? CapturePerspectiveCameraSettings()
+        {
+            if (Camera is not PerspectiveCamera camera)
+                return null;
+
+            return new PerspectiveCameraSettings
+            {
+                PositionX = camera.Position.X,
+                PositionY = camera.Position.Y,
+                PositionZ = camera.Position.Z,
+
+                LookDirectionX = camera.LookDirection.X,
+                LookDirectionY = camera.LookDirection.Y,
+                LookDirectionZ = camera.LookDirection.Z,
+
+                UpDirectionX = camera.UpDirection.X,
+                UpDirectionY = camera.UpDirection.Y,
+                UpDirectionZ = camera.UpDirection.Z,
+
+                FieldOfView = camera.FieldOfView,
+                NearPlaneDistance = camera.NearPlaneDistance,
+                FarPlaneDistance = camera.FarPlaneDistance
+            };
+        }
+
         private readonly StarScintillationEffect _starTwinkleEffect = new();
 
         private bool _backgroundTwinkleEnabled;
