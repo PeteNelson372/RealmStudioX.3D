@@ -61,6 +61,36 @@ namespace RealmStudioX._3D.Views.Controls
             };
         }
 
+        public void ApplyPerspectiveCameraSettings(PerspectiveCameraSettings settings)
+        {
+            ArgumentNullException.ThrowIfNull(settings);
+
+            PerspectiveCamera camera =
+                Camera as PerspectiveCamera ?? new PerspectiveCamera();
+
+            camera.Position = new Point3D(
+                settings.PositionX,
+                settings.PositionY,
+                settings.PositionZ);
+
+            camera.LookDirection = new Vector3D(
+                settings.LookDirectionX,
+                settings.LookDirectionY,
+                settings.LookDirectionZ);
+
+            camera.UpDirection = new Vector3D(
+                settings.UpDirectionX,
+                settings.UpDirectionY,
+                settings.UpDirectionZ);
+
+            camera.FieldOfView = settings.FieldOfView;
+            camera.NearPlaneDistance = settings.NearPlaneDistance;
+            camera.FarPlaneDistance = settings.FarPlaneDistance;
+
+            if (!ReferenceEquals(Camera, camera))
+                HelixTKViewport.Camera = camera;
+        }
+
         private readonly StarScintillationEffect _starTwinkleEffect = new();
 
         private bool _backgroundTwinkleEnabled;
